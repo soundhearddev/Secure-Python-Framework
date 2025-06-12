@@ -1,6 +1,6 @@
 import json
 import random
-import os
+
 # Alle Zeichen, die im Python-Code vorkommen können (inkl. Zeilenumbruch und Tab)
 z = (
     [chr(i) for i in range(32, 127)]  # Standard-ASCII-Zeichen
@@ -23,14 +23,14 @@ def crm(): #create random mapping
 
 def sm(mapping, file): # save mapping
     verschleiert = {z2k(k): v for k, v in mapping.items()}
-    file = "data/framework/decoder/" + file.removesuffix(".py") + ".lpip.json"
+    file = ".venv\Lib\site-packages\secure_python\secure" + file.removesuffix(".py") + ".lpip.json"
     print(file)
     with open(file, "w", encoding="utf-8") as f:
         json.dump(verschleiert, f, ensure_ascii=False)
 
 
 def lm(file): # load mapping
-    file = "data/framework/decoder/" + file.removesuffix(".py") + ".lpip.json"
+    file = ".venv\Lib\site-packages\secure_python\secure" + file.removesuffix(".py") + ".lpip.json"
     with open(file, "r", encoding="utf-8") as f:
         verschleiert = json.load(f)
     mapping = {k2z(k): v for k, v in verschleiert.items()}
@@ -64,8 +64,8 @@ def oef(file): #open encoded file
 
 
 def df(file): #decode file
-    # Mapping laden (wird nach Benutzung gelöscht)
-    mapping = lm("data/framework/decoder/pattern.lpip.json")
+    file = ".venv\Lib\site-packages\secure_python\secure" + file.removesuffix(".py") + ".lpip.json"
+    mapping = file
     opened_file = oef(file)
     out_file = "data/framework/decoded/" + file
     decoded = dt(opened_file, mapping)

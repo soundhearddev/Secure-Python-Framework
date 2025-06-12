@@ -20,6 +20,9 @@ setup(
     ],
     include_package_data=True,
     package_data={
-        "secure_python": ["secure_python/."],
+        "secure_python": [
+            "*",  # Alle Dateien im Ordner `secure_python`
+            "secure/*",  # Alle Dateien im Unterordner `secure_python/secure`
+        ],
     },
 )
