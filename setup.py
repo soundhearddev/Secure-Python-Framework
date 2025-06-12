@@ -7,7 +7,7 @@ setup(
     description='A framework for encoding and decoding text using custom mappings.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/yourusername/secure_python_framework',
+    url='https://github.com/soundhearddev/Secure-Python-Framework.git',
     packages=find_packages(),
     classifiers=[
         'Programming Language :: Python :: 3',
@@ -18,4 +18,8 @@ setup(
     install_requires=[
         # Add any dependencies your project needs here
     ],
+    include_package_data=True,
+    package_data={
+        "secure_python": ["secure_python/."],
+    },
 )

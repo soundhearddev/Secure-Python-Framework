@@ -14,4 +14,4 @@ dependencies = []  # Add any dependencies your project requires here
 
 [tool.setuptools]
 packages = ["secure_python"]
-include_package_data = true
+include-package-data = true 
