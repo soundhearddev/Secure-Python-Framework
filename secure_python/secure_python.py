@@ -23,14 +23,14 @@ def crm(): #create random mapping
 
 def sm(mapping, file): # save mapping
     verschleiert = {z2k(k): v for k, v in mapping.items()}
-    file = ".venv\Lib\site-packages\secure_python\secure" + file.removesuffix(".py") + ".lpip.json"
+    file = ".venv\\Lib\\site-packages\\secure_python\\secure\\" + file.removesuffix(".py") + ".lpip.json"
     print(file)
     with open(file, "w", encoding="utf-8") as f:
         json.dump(verschleiert, f, ensure_ascii=False)
 
 
 def lm(file): # load mapping
-    file = ".venv\Lib\site-packages\secure_python\secure" + file.removesuffix(".py") + ".lpip.json"
+    file = ".venv\\Lib\\site-packages\\secure_python\\secure\\" + file.removesuffix(".py") + ".lpip.json"
     with open(file, "r", encoding="utf-8") as f:
         verschleiert = json.load(f)
     mapping = {k2z(k): v for k, v in verschleiert.items()}
@@ -51,23 +51,23 @@ def ef(file, mapping): #encode file
     with open(file, "r", encoding="utf-8") as f:
         code = f.read()
     encoded = et(code, mapping)
-    out_file = "data/framework/encoded/" + file.removesuffix(".py") + ".lpip"
+    out_file = "data\\" + file.removesuffix(".py") + ".lpip"
     with open(out_file, "w", encoding="utf-8") as f:
         f.write(encoded)
 
 
 def oef(file): #open encoded file
-    file = "data/framework/encoded/" + file.removesuffix(".py") + ".lpip"
+    file = "data\\" + file.removesuffix(".py") + ".lpip"
     with open(file, "r", encoding="utf-8") as f:
         encoded_code = f.read()
     return encoded_code
 
 
 def df(file): #decode file
-    file = ".venv\Lib\site-packages\secure_python\secure" + file.removesuffix(".py") + ".lpip.json"
+    file = ".venv\\Lib\\site-packages\\secure_python\\\secure\\" + file.removesuffix(".py") + ".lpip.json"
     mapping = file
     opened_file = oef(file)
-    out_file = "data/framework/decoded/" + file
+    out_file = "data\\" + file
     decoded = dt(opened_file, mapping)
     with open(out_file, "w", encoding="utf-8") as f:
         f.write(decoded)
