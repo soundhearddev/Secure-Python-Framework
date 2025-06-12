@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "secure_python_framework"
+version = "0.1.0"
+description = "A framework for encoding and decoding text using custom mappings."
+authors = [{ name = "Soundheard" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.6"
+dependencies = []  # Add any dependencies your project requires here
+
+[tool.setuptools]
+packages = ["secure_python"]
+include_package_data = true
