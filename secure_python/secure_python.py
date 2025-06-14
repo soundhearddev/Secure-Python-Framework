@@ -67,14 +67,32 @@ def oef(file): #open encoded file
     return encoded_code
 
 
-def df(file): #decode file
-    file = secure_pfad() + file.removesuffix(".py") + ".lpip.json"
-    mapping = file
+import os
+
+import os
+
+def df(file):  # decode file
+    # Erstelle den Pfad zur verschlüsselten Datei
+    file_path = secure_pfad() + "\\data\\" + file.removesuffix(".py") + ".lpip"
+    
+    # Überprüfe, ob die Datei existiert
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Die Datei {file_path} wurde nicht gefunden.")
+    
+    # Lade das Mapping
+    mapping = lm(file)
+    
+    # Öffne die verschlüsselte Datei
     opened_file = oef(file)
-    out_file = "\\data\\" + file
+    
+    # Dekodiere den Inhalt
     decoded = dt(opened_file, mapping)
+    
+    # Speichere die dekodierte Datei als .py im aktuellen Arbeitsverzeichnis
+    out_file = os.getcwd() + "\\" + file.removesuffix(".py") + ".py"
     with open(out_file, "w", encoding="utf-8") as f:
         f.write(decoded)
+
 
 def dfts(file, mapping): #decode file to string
     opened_file = oef(file)
