@@ -4,7 +4,10 @@ import sys
 import os
 # Alle Zeichen, die im Python-Code vorkommen können (inkl. Zeilenumbruch und Tab)
 z = (
-    [chr(i) for i in range(32, 217)]  # Standard-ASCII-Zeichen... falls nötig ist maximal 2970 möglich(nutzen auf eigene Gefahr!)
+    [chr(i) for i in range(32, 591)]  # Standard-ASCII-Zeichen... falls nötig ist maximal 2970 möglich(nutzen auf eigene Gefahr!)
+    
+    #falls gewünscht ist auch eine minimale Zeichenanzahl von 217 möglich... es macht eigentlich keinen unterschied
+
     #[chr(i) for i in range(2970)]
     + ['\n', '\t', 'ü', 'ä', 'ö', 'ß']                    # Zeilenumbruch und Tab
 )
@@ -15,9 +18,47 @@ k = list("𒀀𒀁𒀂𒀃𒀄𒀅𒀆𒀇𒀈𒀉𒀊𒀋𒀌𒀍𒀎𒀏𒀐�
 
 
 
-
+#test commands
 def wlidl(): #wie lange ist die Liste?
     print(f"Die Liste enthält {len(k)} Zeichen.")
+
+def diw(): #does it work?
+    print("it works!")
+    print("")
+
+def dirw(): #does it really work?
+    import secure_python
+    print("it really works!")
+    print("Module attributes:", dir(secure_python))
+
+def okbdirw():  # ok, but does it really work?
+    import platform
+    from datetime import datetime
+    import socket
+
+    # Python-Version
+    python_version = platform.python_version()
+    current_time = datetime.now()
+    hostname = socket.gethostname()
+    local_ip = socket.gethostbyname(socket.gethostname())
+
+    # Debug-Ausgaben
+    print("you make me sick!!!")
+    print("Python-Version:", python_version)
+    print("Aktuelles Datum und Uhrzeit:", current_time)
+    print("Hostname:", hostname)
+    print("Lokale IP-Adresse:", local_ip)
+    datei = "you_make_me_sick" + str(current_time).replace(":", "-").replace(" ", "_") + ".txt"
+    # Daten in Datei schreiben
+    with open(datei, "w") as f:
+        f.write("you make me sick!!!\n")
+        f.write(f"Python-Version: {python_version}\n")
+        f.write(f"Aktuelles Datum und Uhrzeit: {current_time}\n")
+        f.write(f"Hostname: {hostname}\n")
+        f.write(f"Lokale IP-Adresse: {local_ip}\n")
+
+
+
 
 
 def z2k(s):  # Zeichen zu Keilschrift
