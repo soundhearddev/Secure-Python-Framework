@@ -1,2 +1,2 @@
-import secure_python.secure
-print(secure_python.secure.__file__)
+import secure_python.secure_python as spy
+spy.wlidl()

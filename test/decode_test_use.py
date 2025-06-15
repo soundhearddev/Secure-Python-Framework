@@ -1,10 +1,22 @@
 
-#this line just executes the code in the file test_file.py
-f = "test_file.py";import secure_python.secure_python as spy;m = spy.lm(f);dc = spy.dfts(f, m);exec(dc)
+f = "test_file.py"
+import secure_python.secure_python as spy
 
-import os; import time
-os.remove("test_file.py")  # delete the file
-time.sleep(3)
+# Entschlüsselung
+m = spy.lm(f)
+dc = spy.dfts(f, m)
 
-# this line saves the encrypted code to a file again
-spy.df(f)
+
+#print("Entschlüsselter Code:")
+#print(dc)
+
+# Überprüfen, ob der entschlüsselte Code gültig ist
+try:
+    exec(dc)
+except SyntaxError as e:
+    print(f"❌ SyntaxError im entschlüsselten Code: {e}")
+except Exception as e:
+    print(f"❌ Fehler beim Ausführen des entschlüsselten Codes: {e}")
+
+#or in short:
+#f = "test_file.py";import secure_python.secure_python as spy;m = spy.lm(f);dc = spy.dfts(f, m);exec(dc)
