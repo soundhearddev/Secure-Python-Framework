@@ -1,11 +1,10 @@
-<<<<<<< HEAD
 import os
 import json
 import secure_python.secure_python as spy
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
-=======
+
 
 f = "test_file.py"
 import secure_python.secure_python as spy
@@ -13,15 +12,13 @@ import secure_python.secure_python as spy
 # Entschlüsselung
 m = spy.lm(f)
 dc = spy.dfts(f, m)
->>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
 
 PASSWORD = "mein_geheimes_passwort"
 PY_FILE = "test_file.py"
 
-<<<<<<< HEAD
 def secure_pfad():
     # Nutze deine Funktion aus spy oder definiere passend
-    return spy.secure_pfad()
+    return spy.sp()
 
 # Pfade
 json_path = secure_pfad() + PY_FILE.removesuffix(".py") + ".lpyip.json"
@@ -124,7 +121,7 @@ if __name__ == "__main__":
     mapping = decrypt_mapping()
     encode_script(mapping)
     check_and_decode(mapping)
-=======
+
 #print("Entschlüsselter Code:")
 #print(dc)
 
@@ -138,4 +135,3 @@ except Exception as e:
 
 #or in short:
 #f = "test_file.py";import secure_python.secure_python as spy;m = spy.lm(f);dc = spy.dfts(f, m);exec(dc)
->>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0

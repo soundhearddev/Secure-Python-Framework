@@ -8,7 +8,7 @@ from Crypto.Random import get_random_bytes
 
 PY_FILE      = "test_file.py"
 PASSWORD    = "mein_geheimes_passwort"
-JSON_PATH    = spy.secure_pfad() + PY_FILE.removesuffix(".py") + ".json"
+JSON_PATH    = spy.sp() + PY_FILE.removesuffix(".py") + ".json"
 MAPPING_ENC  = JSON_PATH + ".enc"
 
 def print_mapping_info(mapping, label):
