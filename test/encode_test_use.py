@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 import json
 import secure_python.secure_python as spy
@@ -27,12 +28,42 @@ def print_mapping_info(mapping, label):
         print("  ✅ Alle Keys und Values sind einzelne Strings.")
 
 # 1) Mapping erzeugen und als JSON speichern (mit UTF-8 & ensure_ascii=False!)
+=======
+file = "test_file.py"
+
+import secure_python as spy
+
+# Debugging: Zeige alle Attribute des Moduls
+print("Module attributes:", dir(spy))
+
+# Debugging: Zeige den Pfad des Moduls
+print("Module path:", spy.__file__)
+
+# Versuche, die Funktion crm zu verwenden
+try:
+    mapping = spy.crm()
+except AttributeError as e:
+    print("ERROR:", e)
+
+
+# Neues Pattern erzeugen und speichern
+print(dir(spy))
+
+>>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
 mapping = spy.crm()
 spy.sm(mapping, PY_FILE)
 print(f"[+] Mapping als JSON geschrieben → {JSON_PATH}")
 
+<<<<<<< HEAD
 # 2) Mapping prüfen (vor Verschlüsselung)
 print_mapping_info(mapping, "Vor Verschlüsselung")
+=======
+# Pattern anzeigen
+print("Pattern (Mapping):")
+for k, v in mapping.items():
+    print(f"{repr(k)} -> {repr(v)}")
+print("-" * 40)
+>>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
 
 # 3) JSON-Datei verschlüsseln (AES-GCM)
 def encrypt_file(in_path, out_path, password):

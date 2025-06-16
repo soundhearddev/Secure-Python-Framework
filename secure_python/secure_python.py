@@ -57,6 +57,7 @@ def okbdirw():  # ok, but does it really work?
         f.write(f"Hostname: {hostname}\n")
         f.write(f"Lokale IP-Adresse: {local_ip}\n")
 
+<<<<<<< HEAD
 def secure_pfad():
     base = None
     if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
@@ -113,12 +114,15 @@ def decrypt_mapping(filename: str, password: str) -> dict:
 
 
 
+=======
+>>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
 
 
 
 
 def z2k(s):  # Zeichen zu Keilschrift
     return ''.join(k[z.index(c)] if c in z else '?' for c in s)
+<<<<<<< HEAD
 
 def k2z(s: str):
     result = []
@@ -134,6 +138,12 @@ def k2z(s: str):
     return ''.join(result)
 
 
+=======
+
+def k2z(s):  # Keilschrift zu Zeichen
+    return ''.join(z[k.index(c)] if c in k else '?' for c in s)
+
+>>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
 def crm():  # Create random mapping
     shuffled = k[:]
     random.shuffle(shuffled)
@@ -142,6 +152,7 @@ def crm():  # Create random mapping
 def cfe(filepath):
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"Die Datei {filepath} wurde nicht gefunden.")
+<<<<<<< HEAD
 
 
 
@@ -172,6 +183,45 @@ def et(text, mapping):  # Encode text
 def dt(text, mapping):  # Decode text
     reverse = {v: k for k, v in mapping.items()}
     return ''.join(reverse.get(c, '') for c in text)  # fehlende Zeichen überspringen
+=======
+
+
+
+
+
+def secure_pfad():
+    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        pfad = sys.prefix
+    elif 'VIRTUAL_ENV' in os.environ:
+        pfad = os.environ['VIRTUAL_ENV']
+    pfad = pfad + "\\Lib\\site-packages\\secure_python\\secure\\"
+    return pfad
+
+
+def sm(mapping, file):  # Save mapping
+    verschleiert = {z2k(k): v for k, v in mapping.items()}
+    filepath = secure_pfad() + file.removesuffix(".py") + ".lpip.json"
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(verschleiert, f, ensure_ascii=False)
+    print(f"Mapping erfolgreich gespeichert")
+
+def lm(file):  # Load mapping
+    filepath = secure_pfad() + file.removesuffix(".py") + ".lpip.json"
+    cfe(filepath)
+    with open(filepath, "r", encoding="utf-8") as f:
+        verschleiert = json.load(f)
+    mapping = {k2z(k): v for k, v in verschleiert.items()}
+    return mapping
+
+def et(text, mapping):  # Encode text
+    return ''.join(mapping.get(c, '[UNKNOWN]') for c in text)
+
+
+def dt(text, mapping):  # Decode text
+    reverse = {v: k for k, v in mapping.items()}
+    return ''.join(reverse.get(c, '[UNKNOWN]') for c in text)
+>>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
 
 
 
@@ -179,14 +229,22 @@ def ef(file, mapping): #encode file
     with open(file, "r", encoding="utf-8") as f:
         code = f.read()
     encoded = et(code, mapping)
+<<<<<<< HEAD
     out_file = secure_pfad() + "data\\" + file.removesuffix(".py") + ".lpyip"
+=======
+    out_file = secure_pfad() + "data\\" + file.removesuffix(".py") + ".lpip"
+>>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
     with open(out_file, "w", encoding="utf-8") as f:
         f.write(encoded)
     print(f"Datei erfolgreich verschlüsselt")
 
 
 def oef(file): #open encoded file
+<<<<<<< HEAD
     file = secure_pfad() + "data\\" + file.removesuffix(".py") + ".lpyip"
+=======
+    file = secure_pfad() + "data\\" + file.removesuffix(".py") + ".lpip"
+>>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
     with open(file, "r", encoding="utf-8") as f:
         encoded_code = f.read()
     return encoded_code
@@ -195,7 +253,11 @@ def oef(file): #open encoded file
 
 
 def df(file):  # decode file
+<<<<<<< HEAD
     file_path = secure_pfad() + "\\data\\" + file.removesuffix(".py") + ".lpyip"
+=======
+    file_path = secure_pfad() + "\\data\\" + file.removesuffix(".py") + ".lpip"
+>>>>>>> 58cd2a9ba70157d863eeacb868651bf651a374d0
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Die Datei {file_path} wurde nicht gefunden.")
     mapping = lm(file)
