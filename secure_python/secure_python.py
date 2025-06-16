@@ -1,6 +1,10 @@
 import json
 import random
 import sys
+
+from Crypto.Cipher import AES
+from Crypto.Protocol.KDF import PBKDF2
+from Crypto.Random import get_random_bytes
 import os
 # Alle Zeichen, die im Python-Code vorkommen können (inkl. Zeilenumbruch und Tab)
 z = (
@@ -42,7 +46,7 @@ def okbdirw():  # ok, but does it really work?
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(socket.gethostname())
 
-    # Debug-Ausgaben
+
     print("you make me sick!!!")
     print("Python-Version:", python_version)
     print("Aktuelles Datum und Uhrzeit:", current_time)
@@ -73,10 +77,6 @@ def sp():
 
 
 def encrypt_mapping(mapping: dict, password: str, filename: str):
-    from Crypto.Cipher import AES
-    from Crypto.Protocol.KDF import PBKDF2
-    from Crypto.Random import get_random_bytes
-    import base64
 
     # Mapping in JSON-String konvertieren
     plain_text = json.dumps(mapping, ensure_ascii=False).encode('utf-8')
@@ -93,8 +93,6 @@ def encrypt_mapping(mapping: dict, password: str, filename: str):
 
 
 def decrypt_mapping(filename: str, password: str) -> dict:
-    from Crypto.Cipher import AES
-    from Crypto.Protocol.KDF import PBKDF2
 
     with open(filename, "rb") as f:
         data = f.read()
@@ -146,8 +144,6 @@ def crm():  # Create random mapping
 def cfe(filepath):
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"Die Datei {filepath} wurde nicht gefunden.")
-
-
 
 
 
@@ -240,6 +236,7 @@ def oef(file): #open encoded file
 
 
 def df(file):  # decode file
+    
     file_path = sp() + "\\data\\" + file.removesuffix(".py") + ".lpyip"
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Die Datei {file_path} wurde nicht gefunden.")
@@ -255,3 +252,47 @@ def dfts(file, mapping):
     opened_file = oef(file)
     decoded = dt(opened_file, mapping)
     return decoded
+
+def encode_main(f):
+
+    # Konfiguration
+    p = "passwort"
+    j = sp() + f.removesuffix(".py") + ".json"
+    e = j + ".enc"
+
+    # 1. Mapping erzeugen und speichern
+    m = crm()
+    sm(m, f)
+
+    # 2. JSON-Datei verschlüsseln
+    d = open(j, "rb").read()
+    salt = get_random_bytes(16)
+    key = PBKDF2(p, salt, 32, 100_000)
+    cipher = AES.new(key, AES.MODE_GCM)
+    ct, tag = cipher.encrypt_and_digest(d)
+
+    with open(e, "wb") as out:
+        out.write(salt + cipher.nonce + tag + ct)
+
+    # 3. Ursprungsdatei löschen
+    os.remove(j)
+
+    # 4. Datei mit Mapping verschlüsseln
+    ef(f, m)
+
+
+
+def decode_main(f):
+
+    p = "passwort"
+    data = open(sp() + f.removesuffix(".py") + ".json.enc", "rb").read()
+    salt, nonce, tag, ct = data[:16], data[16:32], data[32:48], data[48:]
+    key = PBKDF2(p, salt, 32, 100_000)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    plain = cipher.decrypt_and_verify(ct, tag)
+    raw_map = json.loads(plain.decode("utf-8"))
+    mapping = {k2z(k): v for k, v in raw_map.items()}
+    rev_map = {v: k for k, v in mapping.items()}
+    code = open(sp() + "data/" + f.removesuffix(".py") + ".lpyip", "r", encoding="utf-8").read()
+    decoded = "".join(rev_map.get(c, "?") for c in code)
+    exec(decoded)
