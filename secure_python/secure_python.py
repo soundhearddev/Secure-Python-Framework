@@ -4,7 +4,7 @@ import sys
 import os
 # Alle Zeichen, die im Python-Code vorkommen können (inkl. Zeilenumbruch und Tab)
 z = (
-    [chr(i) for i in range(32, 591)]  # Standard-ASCII-Zeichen... falls nötig ist maximal 2970 möglich(nutzen auf eigene Gefahr!)
+    [chr(i) for i in range(32, 217)]  # Standard-ASCII-Zeichen... falls nötig ist maximal 2970 möglich(nutzen auf eigene Gefahr!)
     
     #falls gewünscht ist auch eine minimale Zeichenanzahl von 217 möglich... es macht eigentlich keinen unterschied
 
@@ -57,12 +57,83 @@ def okbdirw():  # ok, but does it really work?
         f.write(f"Hostname: {hostname}\n")
         f.write(f"Lokale IP-Adresse: {local_ip}\n")
 
+def sp():
+    base = None
+    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        base = sys.prefix
+    elif 'VIRTUAL_ENV' in os.environ:
+        base = os.environ['VIRTUAL_ENV']
+    else:
+        base = os.getcwd()  # Fallback: aktuelles Verzeichnis
+
+    pfad = os.path.join(base, "Lib", "site-packages", "secure_python", "secure")
+    os.makedirs(pfad, exist_ok=True)
+    return pfad + os.sep
+
+
+
+def encrypt_mapping(mapping: dict, password: str, filename: str):
+    from Crypto.Cipher import AES
+    from Crypto.Protocol.KDF import PBKDF2
+    from Crypto.Random import get_random_bytes
+    import base64
+
+    # Mapping in JSON-String konvertieren
+    plain_text = json.dumps(mapping, ensure_ascii=False).encode('utf-8')
+
+    salt = get_random_bytes(16)
+    key = PBKDF2(password, salt, dkLen=32, count=100_000)
+    cipher = AES.new(key, AES.MODE_GCM)
+    ciphertext, tag = cipher.encrypt_and_digest(plain_text)
+
+    with open(filename, "wb") as f:
+        f.write(salt + cipher.nonce + tag + ciphertext)
+
+    print(f"Mapping wurde verschlüsselt in: {filename}")
+
+
+def decrypt_mapping(filename: str, password: str) -> dict:
+    from Crypto.Cipher import AES
+    from Crypto.Protocol.KDF import PBKDF2
+
+    with open(filename, "rb") as f:
+        data = f.read()
+
+    salt = data[:16]
+    nonce = data[16:32]
+    tag = data[32:48]
+    ciphertext = data[48:]
+
+    key = PBKDF2(password, salt, dkLen=32, count=100_000)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    decrypted_data = cipher.decrypt_and_verify(ciphertext, tag)
+
+    return json.loads(decrypted_data.decode('utf-8'))
+
+
+
+
 
 
 
 
 def z2k(s):  # Zeichen zu Keilschrift
     return ''.join(k[z.index(c)] if c in z else '?' for c in s)
+
+def k2z(s: str):
+    result = []
+    for c in s:
+        if c in k:
+            idx = k.index(c)
+            if idx < len(z):
+                result.append(z[idx])
+            else:
+                result.append('?')  # Fehlerhaftes Mapping
+        else:
+            result.append('?')      # Unbekanntes Zeichen
+    return ''.join(result)
+
+
 
 def k2z(s):  # Keilschrift zu Zeichen
     return ''.join(z[k.index(c)] if c in k else '?' for c in s)
@@ -80,7 +151,39 @@ def cfe(filepath):
 
 
 
-def secure_pfad():
+
+
+
+
+def sm(mapping, file):  # Save mapping ohne Verschlüsselung
+    filepath = sp() + file.removesuffix(".py") + ".json"
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(mapping, f, ensure_ascii=False)
+    print(f"Mapping erfolgreich gespeichert")
+
+def lm(file):  # Load mapping ohne Entschlüsselung
+    filepath = sp() + file.removesuffix(".py") + ".json"
+    cfe(filepath)
+    with open(filepath, "r", encoding="utf-8") as f:
+        mapping = json.load(f)
+    return mapping
+
+
+
+def et(text, mapping):  # Encode text
+    return ''.join(mapping.get(c, '') for c in text)  # fehlende Zeichen überspringen
+
+def dt(text, mapping):  # Decode text
+    reverse = {v: k for k, v in mapping.items()}
+    return ''.join(reverse.get(c, '') for c in text)  # fehlende Zeichen überspringen
+
+
+
+
+
+
+def sp():
     if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
         pfad = sys.prefix
     elif 'VIRTUAL_ENV' in os.environ:
@@ -91,14 +194,14 @@ def secure_pfad():
 
 def sm(mapping, file):  # Save mapping
     verschleiert = {z2k(k): v for k, v in mapping.items()}
-    filepath = secure_pfad() + file.removesuffix(".py") + ".lpip.json"
+    filepath = sp() + file.removesuffix(".py") + ".json"
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(verschleiert, f, ensure_ascii=False)
     print(f"Mapping erfolgreich gespeichert")
 
 def lm(file):  # Load mapping
-    filepath = secure_pfad() + file.removesuffix(".py") + ".lpip.json"
+    filepath = sp() + file.removesuffix(".py") + ".json"
     cfe(filepath)
     with open(filepath, "r", encoding="utf-8") as f:
         verschleiert = json.load(f)
@@ -119,14 +222,16 @@ def ef(file, mapping): #encode file
     with open(file, "r", encoding="utf-8") as f:
         code = f.read()
     encoded = et(code, mapping)
-    out_file = secure_pfad() + "data\\" + file.removesuffix(".py") + ".lpip"
+    out_file = sp() + "data\\" + file.removesuffix(".py") + ".lpyip"
+
+    out_file = sp() + "data\\" + file.removesuffix(".py") + ".lpyip"
     with open(out_file, "w", encoding="utf-8") as f:
         f.write(encoded)
     print(f"Datei erfolgreich verschlüsselt")
 
 
 def oef(file): #open encoded file
-    file = secure_pfad() + "data\\" + file.removesuffix(".py") + ".lpip"
+    file = sp() + "data\\" + file.removesuffix(".py") + ".lpyip"
     with open(file, "r", encoding="utf-8") as f:
         encoded_code = f.read()
     return encoded_code
@@ -135,7 +240,7 @@ def oef(file): #open encoded file
 
 
 def df(file):  # decode file
-    file_path = secure_pfad() + "\\data\\" + file.removesuffix(".py") + ".lpip"
+    file_path = sp() + "\\data\\" + file.removesuffix(".py") + ".lpyip"
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Die Datei {file_path} wurde nicht gefunden.")
     mapping = lm(file)
