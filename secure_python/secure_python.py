@@ -1,10 +1,14 @@
 import json
 import random
 import sys
+
+from Crypto.Cipher import AES
+from Crypto.Protocol.KDF import PBKDF2
+from Crypto.Random import get_random_bytes
 import os
 # Alle Zeichen, die im Python-Code vorkommen können (inkl. Zeilenumbruch und Tab)
 z = (
-    [chr(i) for i in range(32, 591)]  # Standard-ASCII-Zeichen... falls nötig ist maximal 2970 möglich(nutzen auf eigene Gefahr!)
+    [chr(i) for i in range(32, 217)]  # Standard-ASCII-Zeichen... falls nötig ist maximal 2970 möglich(nutzen auf eigene Gefahr!)
     
     #falls gewünscht ist auch eine minimale Zeichenanzahl von 217 möglich... es macht eigentlich keinen unterschied
 
@@ -42,7 +46,7 @@ def okbdirw():  # ok, but does it really work?
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(socket.gethostname())
 
-    # Debug-Ausgaben
+
     print("you make me sick!!!")
     print("Python-Version:", python_version)
     print("Aktuelles Datum und Uhrzeit:", current_time)
@@ -73,10 +77,6 @@ def sp():
 
 
 def encrypt_mapping(mapping: dict, password: str, filename: str):
-    from Crypto.Cipher import AES
-    from Crypto.Protocol.KDF import PBKDF2
-    from Crypto.Random import get_random_bytes
-    import base64
 
     # Mapping in JSON-String konvertieren
     plain_text = json.dumps(mapping, ensure_ascii=False).encode('utf-8')
@@ -93,8 +93,6 @@ def encrypt_mapping(mapping: dict, password: str, filename: str):
 
 
 def decrypt_mapping(filename: str, password: str) -> dict:
-    from Crypto.Cipher import AES
-    from Crypto.Protocol.KDF import PBKDF2
 
     with open(filename, "rb") as f:
         data = f.read()
@@ -135,9 +133,6 @@ def k2z(s: str):
 
 
 
-def k2z(s):  # Keilschrift zu Zeichen
-    return ''.join(z[k.index(c)] if c in k else '?' for c in s)
-
 def crm():  # Create random mapping
     shuffled = k[:]
     random.shuffle(shuffled)
@@ -155,53 +150,19 @@ def cfe(filepath):
 
 
 
-def sm(mapping, file):  # Save mapping ohne Verschlüsselung
-    filepath = sp() + file.removesuffix(".py") + ".json"
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(mapping, f, ensure_ascii=False)
-    print(f"Mapping erfolgreich gespeichert")
-
-def lm(file):  # Load mapping ohne Entschlüsselung
-    filepath = sp() + file.removesuffix(".py") + ".json"
-    cfe(filepath)
-    with open(filepath, "r", encoding="utf-8") as f:
-        mapping = json.load(f)
-    return mapping
-
-
-
-def et(text, mapping):  # Encode text
-    return ''.join(mapping.get(c, '') for c in text)  # fehlende Zeichen überspringen
-
-def dt(text, mapping):  # Decode text
-    reverse = {v: k for k, v in mapping.items()}
-    return ''.join(reverse.get(c, '') for c in text)  # fehlende Zeichen überspringen
-
-
-
-
-
-
-def sp():
-    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
-        pfad = sys.prefix
-    elif 'VIRTUAL_ENV' in os.environ:
-        pfad = os.environ['VIRTUAL_ENV']
-    pfad = pfad + "\\Lib\\site-packages\\secure_python\\secure\\"
-    return pfad
-
-
 def sm(mapping, file):  # Save mapping
     verschleiert = {z2k(k): v for k, v in mapping.items()}
-    filepath = sp() + file.removesuffix(".py") + ".lpip.json"
+    filepath = sp() + file.removesuffix(".py") + ".json"
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(verschleiert, f, ensure_ascii=False)
     print(f"Mapping erfolgreich gespeichert")
 
+
+
+
 def lm(file):  # Load mapping
-    filepath = sp() + file.removesuffix(".py") + ".lpip.json"
+    filepath = sp() + file.removesuffix(".py") + ".json"
     cfe(filepath)
     with open(filepath, "r", encoding="utf-8") as f:
         verschleiert = json.load(f)
@@ -224,7 +185,7 @@ def ef(file, mapping): #encode file
     encoded = et(code, mapping)
     out_file = sp() + "data\\" + file.removesuffix(".py") + ".lpyip"
 
-    out_file = sp() + "data\\" + file.removesuffix(".py") + ".lpip"
+    out_file = sp() + "data\\" + file.removesuffix(".py") + ".lpyip"
     with open(out_file, "w", encoding="utf-8") as f:
         f.write(encoded)
     print(f"Datei erfolgreich verschlüsselt")
@@ -232,8 +193,6 @@ def ef(file, mapping): #encode file
 
 def oef(file): #open encoded file
     file = sp() + "data\\" + file.removesuffix(".py") + ".lpyip"
-
-    file = sp() + "data\\" + file.removesuffix(".py") + ".lpip"
     with open(file, "r", encoding="utf-8") as f:
         encoded_code = f.read()
     return encoded_code
@@ -242,8 +201,8 @@ def oef(file): #open encoded file
 
 
 def df(file):  # decode file
+    
     file_path = sp() + "\\data\\" + file.removesuffix(".py") + ".lpyip"
-    file_path = sp() + "\\data\\" + file.removesuffix(".py") + ".lpip"
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Die Datei {file_path} wurde nicht gefunden.")
     mapping = lm(file)
@@ -258,3 +217,68 @@ def dfts(file, mapping):
     opened_file = oef(file)
     decoded = dt(opened_file, mapping)
     return decoded
+
+def ems(f): #encopde main save
+    p = "passwort"
+    j = sp() + f.removesuffix(".py") + ".json"
+    e = j.removesuffix(".json") + ".enc"
+    m = crm()
+    sm(m, f)
+    d = open(j, "rb").read()
+    salt = get_random_bytes(16)
+    key = PBKDF2(p, salt, 32, 100_000)
+    cipher = AES.new(key, AES.MODE_GCM)
+    ct, tag = cipher.encrypt_and_digest(d)
+    with open(e, "wb") as out:
+        out.write(salt + cipher.nonce + tag + ct)
+    os.remove(j)
+    ef(f, m)
+
+def emd(f): #encode main delete
+    p = "passwort"
+    j = sp() + f.removesuffix(".py") + ".json"
+    e = j.removesuffix(".json") + ".enc"
+    m = crm()
+    sm(m, f)
+    d = open(j, "rb").read()
+    salt = get_random_bytes(16)
+    key = PBKDF2(p, salt, 32, 100_000)
+    cipher = AES.new(key, AES.MODE_GCM)
+    ct, tag = cipher.encrypt_and_digest(d)
+    with open(e, "wb") as out:
+        out.write(salt + cipher.nonce + tag + ct)
+    os.remove(j)
+    ef(f, m)
+    os.remove(f)
+
+
+p = "passwort" 
+
+def dme(f):
+    data = open(sp() + f.removesuffix(".py") + ".enc", "rb").read()
+    salt, nonce, tag, ct = data[:16], data[16:32], data[32:48], data[48:]
+    key = PBKDF2(p, salt, 32, 100_000)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    plain = cipher.decrypt_and_verify(ct, tag)
+    raw_map = json.loads(plain.decode("utf-8"))
+    mapping = {k2z(k): v for k, v in raw_map.items()}
+    rev_map = {v: k for k, v in mapping.items()}
+    code = open(sp() + "data/" + f.removesuffix(".py") + ".lpyip", "r", encoding="utf-8").read()
+    decoded = "".join(rev_map.get(c, "?") for c in code)
+    exec(decoded)
+
+
+def dms(f):
+    data = open(sp() + f.removesuffix(".py") + ".enc", "rb").read()
+    salt, nonce, tag, ct = data[:16], data[16:32], data[32:48], data[48:]
+    key = PBKDF2(p, salt, 32, 100_000)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    plain = cipher.decrypt_and_verify(ct, tag)
+    raw_map = json.loads(plain.decode("utf-8"))
+    mapping = {k2z(k): v for k, v in raw_map.items()}
+    rev_map = {v: k for k, v in mapping.items()}
+    code = open(sp() + "data/" + f.removesuffix(".py") + ".lpyip", "r", encoding="utf-8").read()
+    decoded = "".join(rev_map.get(c, "?") for c in code)
+    mf = f.removesuffix(".py") + "__encoded__.py"
+    with open(mf, "w", encoding="utf-8") as f:
+        f.write(decoded)

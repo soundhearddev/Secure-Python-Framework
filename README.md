@@ -20,20 +20,7 @@ pip install .
 
 ## Usage
 
-After installation, you can import the framework in your Python projects:
-
-```python
-import secure_python
-
-# Example of creating a random mapping
-mapping = secure_python.crm()
-
-# Encoding text
-encoded_text = secure_python.et("Your sensitive data", mapping)
-
-# Decoding text
-decoded_text = secure_python.dt(encoded_text, mapping)
-```
+in the test folder you will find two files, which will not explain it so yeah.... anyway. in secure-python you will find secure_python.py and there is everything. like everything. so yeah. Have fun decoding the code ;)
 
 ## Running Tests
 
