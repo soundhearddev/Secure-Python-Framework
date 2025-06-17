@@ -254,18 +254,33 @@ def emd(f): #encode main delete
 
 p = "passwort" 
 
-def dme(f):
-    data = open(sp() + f.removesuffix(".py") + ".enc", "rb").read()
-    salt, nonce, tag, ct = data[:16], data[16:32], data[32:48], data[48:]
-    key = PBKDF2(p, salt, 32, 100_000)
-    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
-    plain = cipher.decrypt_and_verify(ct, tag)
-    raw_map = json.loads(plain.decode("utf-8"))
-    mapping = {k2z(k): v for k, v in raw_map.items()}
-    rev_map = {v: k for k, v in mapping.items()}
-    code = open(sp() + "data/" + f.removesuffix(".py") + ".lpyip", "r", encoding="utf-8").read()
-    decoded = "".join(rev_map.get(c, "?") for c in code)
-    exec(decoded)
+
+def dme(f, namespace=None):
+    if namespace is None:
+        namespace = globals()
+    try:
+        enc_path = sp() + f.removesuffix(".py") + ".enc"
+        code_path = sp() + "data/" + f.removesuffix(".py") + ".lpyip"
+        #print(f"Mapping wird geladen von: {os.path.abspath(enc_path)}")
+        #print(f"Verschlüsselter Code wird geladen von: {os.path.abspath(code_path)}")
+
+        with open(enc_path, "rb") as enc_file:
+            data = enc_file.read()
+        salt, nonce, tag, ct = data[:16], data[16:32], data[32:48], data[48:]
+        key = PBKDF2(p, salt, 32, 100_000)
+        cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+        plain = cipher.decrypt_and_verify(ct, tag)
+        raw_map = json.loads(plain.decode("utf-8"))
+        mapping = {k2z(k): v for k, v in raw_map.items()}
+        rev_map = {v: k for k, v in mapping.items()}
+
+        with open(code_path, "r", encoding="utf-8") as code_file:
+            code = code_file.read()
+        decoded = "".join(rev_map.get(c, "?") for c in code)
+        #print(f"--- Entschlüsselter Code ---\n{decoded}\n--- ENDE ---")
+        exec(decoded, namespace)
+    except Exception as e:
+        print(f"Fehler beim Entschlüsseln/Ausführen: {e}")
 
 
 def dms(f):
