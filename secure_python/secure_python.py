@@ -1,3 +1,4 @@
+this 
 import json
 import random
 import sys
@@ -133,9 +134,6 @@ def k2z(s: str):
 
 
 
-def k2z(s):  # Keilschrift zu Zeichen
-    return ''.join(z[k.index(c)] if c in k else '?' for c in s)
-
 def crm():  # Create random mapping
     shuffled = k[:]
     random.shuffle(shuffled)
@@ -151,41 +149,6 @@ def cfe(filepath):
 
 
 
-def sm(mapping, file):  # Save mapping ohne Verschlüsselung
-    filepath = sp() + file.removesuffix(".py") + ".json"
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "w", encoding="utf-8") as f:
-        json.dump(mapping, f, ensure_ascii=False)
-    print(f"Mapping erfolgreich gespeichert")
-
-def lm(file):  # Load mapping ohne Entschlüsselung
-    filepath = sp() + file.removesuffix(".py") + ".json"
-    cfe(filepath)
-    with open(filepath, "r", encoding="utf-8") as f:
-        mapping = json.load(f)
-    return mapping
-
-
-
-def et(text, mapping):  # Encode text
-    return ''.join(mapping.get(c, '') for c in text)  # fehlende Zeichen überspringen
-
-def dt(text, mapping):  # Decode text
-    reverse = {v: k for k, v in mapping.items()}
-    return ''.join(reverse.get(c, '') for c in text)  # fehlende Zeichen überspringen
-
-
-
-
-
-
-def sp():
-    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
-        pfad = sys.prefix
-    elif 'VIRTUAL_ENV' in os.environ:
-        pfad = os.environ['VIRTUAL_ENV']
-    pfad = pfad + "\\Lib\\site-packages\\secure_python\\secure\\"
-    return pfad
 
 
 def sm(mapping, file):  # Save mapping
@@ -195,6 +158,9 @@ def sm(mapping, file):  # Save mapping
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(verschleiert, f, ensure_ascii=False)
     print(f"Mapping erfolgreich gespeichert")
+
+
+
 
 def lm(file):  # Load mapping
     filepath = sp() + file.removesuffix(".py") + ".json"
@@ -289,18 +255,33 @@ def emd(f): #encode main delete
 
 p = "passwort" 
 
-def dme(f):
-    data = open(sp() + f.removesuffix(".py") + ".enc", "rb").read()
-    salt, nonce, tag, ct = data[:16], data[16:32], data[32:48], data[48:]
-    key = PBKDF2(p, salt, 32, 100_000)
-    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
-    plain = cipher.decrypt_and_verify(ct, tag)
-    raw_map = json.loads(plain.decode("utf-8"))
-    mapping = {k2z(k): v for k, v in raw_map.items()}
-    rev_map = {v: k for k, v in mapping.items()}
-    code = open(sp() + "data/" + f.removesuffix(".py") + ".lpyip", "r", encoding="utf-8").read()
-    decoded = "".join(rev_map.get(c, "?") for c in code)
-    exec(decoded)
+
+def dme(f, namespace=None):
+    if namespace is None:
+        namespace = globals()
+    try:
+        enc_path = sp() + f.removesuffix(".py") + ".enc"
+        code_path = sp() + "data/" + f.removesuffix(".py") + ".lpyip"
+        #print(f"Mapping wird geladen von: {os.path.abspath(enc_path)}")
+        #print(f"Verschlüsselter Code wird geladen von: {os.path.abspath(code_path)}")
+
+        with open(enc_path, "rb") as enc_file:
+            data = enc_file.read()
+        salt, nonce, tag, ct = data[:16], data[16:32], data[32:48], data[48:]
+        key = PBKDF2(p, salt, 32, 100_000)
+        cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+        plain = cipher.decrypt_and_verify(ct, tag)
+        raw_map = json.loads(plain.decode("utf-8"))
+        mapping = {k2z(k): v for k, v in raw_map.items()}
+        rev_map = {v: k for k, v in mapping.items()}
+
+        with open(code_path, "r", encoding="utf-8") as code_file:
+            code = code_file.read()
+        decoded = "".join(rev_map.get(c, "?") for c in code)
+        #print(f"--- Entschlüsselter Code ---\n{decoded}\n--- ENDE ---")
+        exec(decoded, namespace)
+    except Exception as e:
+        print(f"Fehler beim Entschlüsseln/Ausführen: {e}")
 
 
 def dms(f):
