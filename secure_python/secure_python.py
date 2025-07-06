@@ -1,12 +1,14 @@
 #v.1.3.3 
+#yes the code in this file is VERY bad for reading it's very bad code writing but this is on purpose
+
 import json
 import random
 import sys
-
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Random import get_random_bytes
 import os
+
 # Alle Zeichen, die im Python-Code vorkommen können (inkl. Zeilenumbruch und Tab)
 z = (
     [chr(i) for i in range(32, 217)]  # Standard-ASCII-Zeichen... falls nötig ist maximal 2970 möglich(nutzen auf eigene Gefahr!)
@@ -31,38 +33,8 @@ def diw(): #does it work?
     print("it works!")
     print("")
 
-def dirw(): #does it really work?
-    import secure_python
-    print("it really works!")
-    print("Module attributes:", dir(secure_python))
 
-def okbdirw():  # ok, but does it really work?
-    import platform
-    from datetime import datetime
-    import socket
-
-    # Python-Version
-    python_version = platform.python_version()
-    current_time = datetime.now()
-    hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(socket.gethostname())
-
-
-    print("you make me sick!!!")
-    print("Python-Version:", python_version)
-    print("Aktuelles Datum und Uhrzeit:", current_time)
-    print("Hostname:", hostname)
-    print("Lokale IP-Adresse:", local_ip)
-    datei = "you_make_me_sick" + str(current_time).replace(":", "-").replace(" ", "_") + ".txt"
-    # Daten in Datei schreiben
-    with open(datei, "w") as f:
-        f.write("you make me sick!!!\n")
-        f.write(f"Python-Version: {python_version}\n")
-        f.write(f"Aktuelles Datum und Uhrzeit: {current_time}\n")
-        f.write(f"Hostname: {hostname}\n")
-        f.write(f"Lokale IP-Adresse: {local_ip}\n")
-
-def sp():
+def sp(): #secure path
     base = None
     if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
         base = sys.prefix
@@ -74,46 +46,6 @@ def sp():
     pfad = os.path.join(base, "Lib", "site-packages", "secure_python", "secure")
     os.makedirs(pfad, exist_ok=True)
     return pfad + os.sep
-
-
-
-def encrypt_mapping(mapping: dict, password: str, filename: str):
-
-    # Mapping in JSON-String konvertieren
-    plain_text = json.dumps(mapping, ensure_ascii=False).encode('utf-8')
-
-    salt = get_random_bytes(16)
-    key = PBKDF2(password, salt, dkLen=32, count=100_000)
-    cipher = AES.new(key, AES.MODE_GCM)
-    ciphertext, tag = cipher.encrypt_and_digest(plain_text)
-
-    with open(filename, "wb") as f:
-        f.write(salt + cipher.nonce + tag + ciphertext)
-
-    print(f"Mapping wurde verschlüsselt in: {filename}")
-
-
-def decrypt_mapping(filename: str, password: str) -> dict:
-
-    with open(filename, "rb") as f:
-        data = f.read()
-
-    salt = data[:16]
-    nonce = data[16:32]
-    tag = data[32:48]
-    ciphertext = data[48:]
-
-    key = PBKDF2(password, salt, dkLen=32, count=100_000)
-    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
-    decrypted_data = cipher.decrypt_and_verify(ciphertext, tag)
-
-    return json.loads(decrypted_data.decode('utf-8'))
-
-
-
-
-
-
 
 
 def z2k(s):  # Zeichen zu Keilschrift
@@ -219,8 +151,10 @@ def dfts(file, mapping):
     decoded = dt(opened_file, mapping)
     return decoded
 
-def ems(f): #encopde main save
-    p = "passwort"
+p = "passwort" 
+
+#ems saves the encoded file so like it doesnt delete the file after encoding it
+def ems(f): #encopde main save 
     j = sp() + f.removesuffix(".py") + ".json"
     e = j.removesuffix(".json") + ".enc"
     m = crm()
@@ -236,7 +170,6 @@ def ems(f): #encopde main save
     ef(f, m)
 
 def emd(f): #encode main delete
-    p = "passwort"
     j = sp() + f.removesuffix(".py") + ".json"
     e = j.removesuffix(".json") + ".enc"
     m = crm()
@@ -253,7 +186,6 @@ def emd(f): #encode main delete
     os.remove(f)
 
 
-p = "passwort" 
 
 
 def dme(f, namespace=None):

@@ -10,6 +10,7 @@ from .secure_python import (
     oef,
     df,
     dfts,
+    dme,
     z,
     k
 )
