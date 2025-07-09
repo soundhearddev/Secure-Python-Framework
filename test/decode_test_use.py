@@ -1,8 +1,6 @@
-import secure_python.secure_python as spy
+from secure_python import dme
 
 #dme decode main exec = it will exec() the decoded code in here
 #dms decode main save = it will save the decoded code in a python file 
-spy.dme("test_file.py", globals())
 
-
-printer(5)
+dme("test_file.py", globals())
