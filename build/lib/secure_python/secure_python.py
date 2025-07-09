@@ -10,20 +10,6 @@ from Crypto.Random import get_random_bytes
 import os
 
 DEBUG = False
-# ts needs to be before the main code is loaded for it to work!
-def debug(password):
-    global DEBUG
-    if password == "1234":
-        print("Debug Mode activated")
-        DEBUG = not DEBUG
-        return DEBUG
-
-
-
-
-
-
-
 
 # Alle Zeichen, die im Python-Code vorkommen können (inkl. Zeilenumbruch und Tab)
 z = (
