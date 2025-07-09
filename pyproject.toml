@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "secure_python_framework"
-version = "1.3.3"
+version = "1.3.4"
 description = "A framework for encoding and decoding text using custom mappings."
 authors = [{ name = "Soundheard" }]
 license = { file = "LICENSE" }
