@@ -3,8 +3,4 @@ from secure_python.secure_python import emd, ems
 #ems = encode main safe = this will not delte the encoded file after encoding it, so there will be the original version still there
 
 
-
-
-
-
 ems("test_file.py")
