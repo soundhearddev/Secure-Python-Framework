@@ -5,6 +5,5 @@ def Random():
     print(x)
 Random()
 
-def printer(use):
-    for i in range(use):
-        print("es funktioniert")
+def test():
+    print("it works!")

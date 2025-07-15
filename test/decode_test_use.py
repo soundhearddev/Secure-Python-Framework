@@ -10,4 +10,5 @@ from secure_python import dme, dms
 
 
 
-dms("test_file.py", "data/", False, True)
+dme("test_file.py")
+
