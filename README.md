@@ -1,15 +1,20 @@
-# Secure Python Framework
+
+# Seucre Python Framework
+A Framework for encryption of python files
 
 ## Overview
 
-The Secure Python Framework provides a set of tools for encoding and decoding text using a custom mapping system. It is designed to enhance the security of sensitive information by obfuscating it before storage or transmission.
-
+Secure Python Framework provides a set of tools for encoding and decoding text using a custom mapping system.
+It can be uses to encrypt python files with .py (so far) and decrypt them afterwards.
 ## Features
 
-- Encode and decode text using a custom mapping.
-- Save and load mappings for reuse.
-- Unit tests to ensure functionality.
-- its very hard to decode
+- Encrypt files or plain text  
+- Decrypt an encrypted file into a Python file  
+- Decrypt an encrypted file into a string (e.g. for use with `exec()`)  
+- Supports simultaneous encryption/decryption of unlimited files  
+
+
+
 <details>
   <summary>Click here to see all possibilities (not kidding)</summary>  
 
@@ -27,22 +32,27 @@ yeah...
 </details>
 
 
+
 ## Installation
+clone this repository and install it with pip
 
-To install the Secure Python Framework, you can use pip. Run the following command in your terminal:
-
-```
+```bash
+git clone https://github.com/soundhearddev/Secure-Python-Framework.git
+cd Secure-Python-Framework
 pip install .
 ```
-
 ## Usage
+In this repository, you will find the following files and folders for testing encryption and decryption:
 
-in the test folder you will find two files, which will not explain it so yeah.... anyway. in secure-python you will find secure_python.py and there is everything. like everything. so yeah. Have fun decoding the code ;)
+- `test_file.py`  
+  → A sample file used to test encryption and decryption functions.
 
-## Running Tests
+- `test/` *(folder)*  
+  - `decode_test_use.py`  
+    → Demonstrates how to decrypt an encrypted file.  
+  - `encode_test_use.py`  
+    → Demonstrates how to encrypt a file or string.
 
-You need to have a Python file in the directory, written for the encode_test_use and decode_test_use functions. First, run the encoder and then run the decoder. The decoder uses exec to run the file. You can use it as shown in the example, but you can also use functions, classes, etc. It is necessary to have the .venv folder in the same directory as the project.
+Feel free to run these examples to get a quick overview of how the system works.
 
-## License
 
-This project is licensed under the MIT License. See the LICENSE file for more details.
