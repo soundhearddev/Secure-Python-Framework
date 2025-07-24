@@ -34,7 +34,14 @@ yeah...
 
 
 ## Installation
-clone this repository and install it with pip
+
+Install using pip:
+
+```
+pip install secure-python
+```
+
+Or install locally from source:
 
 ```bash
 git clone https://github.com/soundhearddev/Secure-Python-Framework.git
